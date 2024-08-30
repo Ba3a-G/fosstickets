@@ -7,21 +7,31 @@ let filePath = path.join(__dirname, 'data', 'cleanedAttendees.json');
 let data = fs.readFileSync(filePath, 'utf8');
 let attendees = JSON.parse(data);
 
-let html = fs.readFileSync(path.join(__dirname, 'data', 'message.html'), 'utf8');
+let htmlTemplate = fs.readFileSync(
+  path.join(__dirname, "data", "message.html"),
+  "utf8"
+);
 
 // send an email to each attendee with their QR code
 let sendMessage = (transporter, attendee, qr) => {
-    html.replace('%name%', attendee.name);
+    console.log(qr);
+       let html = htmlTemplate
+         .replace("%name%", attendee.name)
+         .replace("%image%", `https://raw.githubusercontent.com/ba3a-g/fosstickets/main/data/qr/${qr}`);
+
     let message = {
-        from: "jalandharfoss@gmail.com",
-        to: attendee.email,
-        subject: "Ticket for FOSS Jalandhar August Meetup",
-        html: html,
-        plain: "Here is your ticket for the FOSS Jalandhar August Meetup",
-        attachments: [{
-            filename: qr,
-        }]
-      };
+      from: "Organiser of Foss United Jalandhar",
+      to: attendee.email,
+      subject:
+        "Congratulations 🥳 ! Your RSVP for FOSS Jalandhar August Meetup is Approved",
+      html: html,
+      plain: "Here is your ticket for the FOSS Jalandhar August Meetup",
+      //   attachments: [
+      //     {
+      //       filename: qr,
+      //     },
+      //   ],
+    };
     transporter.sendMail(message, function(err, info) {
         if (err) {
             console.error(`Error sending email to ${attendee.email}: ${err}`);
@@ -50,16 +60,36 @@ let transporter = nodemailer.createTransport({
 
 let alreadySentMails = fs.readFileSync(path.join(__dirname, 'data', 'sentMails.json'), 'utf8');
 alreadySentMails = JSON.parse(alreadySentMails);
+let sentMails = require('./data/sentMails.json');
+
 
 try {
-    attendees.forEach((attendee) => {
-        if (alreadySentMails.includes(attendee.id)) {
-            return;
-        }
-        let qr_path = path.join(__dirname, 'data', 'qr', `${attendee.id}.png`);
+    // attendees.forEach((attendee) => {
+    //     if (alreadySentMails.includes(attendee.id)) {
+    //         return;
+    //     }
+    //     let qr_path = path.join(__dirname, 'data', 'qr', `${attendee.id}.png`);
+    //     sendMessage(transporter, attendee, qr_path);
+    //     sentMails.push(attendee.id);
+    // });
+
+    // for testing purpose
+
+    if (attendees.length > 0) {
+      const attendee = attendees[0]; // Get the first attendee
+
+        let qr_path = `${attendee.id}.png`;
         sendMessage(transporter, attendee, qr_path);
-        sentMails.push(attendee.id);
-    });
+          sentMails.push(attendee.id);
+          
+          console.log("sent email");
+
+      
+    }
+
+
+
+
 } catch (err) {
     _syncProgress(path.join(__dirname, 'data', 'sentMails.json'), sentMails);
     console.error(`Error sending email: ${err}`);
