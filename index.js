@@ -20,7 +20,7 @@ let sendMessage = (transporter, attendee, qr) => {
          .replace("%image%", `https://raw.githubusercontent.com/ba3a-g/fosstickets/main/data/qr/${qr}`);
 
     let message = {
-      from: "Organiser of Foss United Jalandhar",
+      from: process.env.SMTP_EMAIL,
       to: attendee.email,
       subject:
         "Congratulations 🥳 ! Your RSVP for FOSS Jalandhar August Meetup is Approved",
@@ -64,28 +64,28 @@ let sentMails = require('./data/sentMails.json');
 
 
 try {
-    // attendees.forEach((attendee) => {
-    //     if (alreadySentMails.includes(attendee.id)) {
-    //         return;
-    //     }
-    //     let qr_path = path.join(__dirname, 'data', 'qr', `${attendee.id}.png`);
-    //     sendMessage(transporter, attendee, qr_path);
-    //     sentMails.push(attendee.id);
-    // });
+  let n = 0;
+    attendees.forEach((attendee) => {
+      if (alreadySentMails.includes(attendee.id)) {
+        return;
+      }
+          let qr_path = `${attendee.id}.png`;
+      sendMessage(transporter, attendee, qr_path);
+      sentMails.push(attendee.id);
+
+      console.log("Email Sent", n++);
+    });
 
     // for testing purpose
 
-    if (attendees.length > 0) {
-      const attendee = attendees[0]; // Get the first attendee
+    // if (attendees.length > 0) {
+    //   const attendee = attendees[0]; // Get the first attendee
 
-        let qr_path = `${attendee.id}.png`;
-        sendMessage(transporter, attendee, qr_path);
-          sentMails.push(attendee.id);
-          
-          console.log("sent email");
-
-      
-    }
+    //     let qr_path = `${attendee.id}.png`;
+    //     sendMessage(transporter, attendee, qr_path);
+    //       sentMails.push(attendee.id);       
+    //       console.log("sent email");   
+    // }
 
 
 
