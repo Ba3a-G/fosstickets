@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "qrcode": "node newIndex.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +15,7 @@
     "dotenv": "^16.4.5",
     "googleapis": "^143.0.0",
     "nodemailer": "^6.9.14",
-    "qr-image": "^3.2.0"
+    "qr-image": "^3.2.0",
+    "qrcode": "^1.5.4"
   }
 }
